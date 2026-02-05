@@ -96,7 +96,7 @@ export class SecurityCodeActionProvider implements vscode.CodeActionProvider {
             updateAction.isPreferred = true;
             // This is informational - actual update would need package manager integration
             updateAction.command = {
-                command: 'trendmicro.showVulnerabilityFix',
+                command: 'trendai.showVulnerabilityFix',
                 title: 'Show Fix Details',
                 arguments: [metadata]
             };
@@ -129,7 +129,7 @@ export class SecurityCodeActionProvider implements vscode.CodeActionProvider {
         );
         addToGitignore.diagnostics = [diagnostic];
         addToGitignore.command = {
-            command: 'trendmicro.addToGitignore',
+            command: 'trendai.addToGitignore',
             title: 'Add to .gitignore',
             arguments: [document.uri.fsPath]
         };
@@ -152,7 +152,7 @@ export class SecurityCodeActionProvider implements vscode.CodeActionProvider {
         );
         suppress.diagnostics = [diagnostic];
         suppress.command = {
-            command: 'trendmicro.suppressFinding',
+            command: 'trendai.suppressFinding',
             title: 'Suppress Finding',
             arguments: [diagnostic, metadata]
         };

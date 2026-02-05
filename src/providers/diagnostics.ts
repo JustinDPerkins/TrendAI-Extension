@@ -16,7 +16,7 @@ export class DiagnosticsProvider {
     private severityThreshold: SeverityLevel;
 
     constructor(severityThreshold: SeverityLevel = 'medium') {
-        this.diagnosticCollection = vscode.languages.createDiagnosticCollection('trendmicro');
+        this.diagnosticCollection = vscode.languages.createDiagnosticCollection('trendai');
         this.severityThreshold = severityThreshold;
     }
 

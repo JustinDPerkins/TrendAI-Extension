@@ -9,5 +9,14 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 !out/**/*.d.ts
-node_modules/**
 test/**
+.claude/**
+package-lock.json
+
+# Exclude dev dependencies only
+node_modules/@types/**
+node_modules/@typescript-eslint/**
+node_modules/@vscode/vsce/**
+node_modules/eslint/**
+node_modules/eslint-*/**
+node_modules/typescript/**

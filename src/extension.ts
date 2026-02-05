@@ -21,8 +21,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     outputChannel = vscode.window.createOutputChannel('TrendAI™ Security');
     outputChannel.appendLine('TrendAI™ Security Scanner activating...');
 
-    // Initialize settings manager
-    settingsManager = new SettingsManager(context);
+    try {
+        // Initialize settings manager
+        settingsManager = new SettingsManager(context);
 
     // Initialize providers
     const settings = settingsManager.getSettings();
@@ -32,13 +33,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     // Initialize scanners
     tmasScanner = new TmasScanner(settingsManager, outputChannel);
     templateScanner = new TemplateScanner(settingsManager, outputChannel);
-    await templateScanner.initialize();
 
     // Create status bar item
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBarItem.text = '$(shield) TrendAI™';
     statusBarItem.tooltip = 'TrendAI™ Security Scanner';
-    statusBarItem.command = 'trendmicro.scanDirectory';
+    statusBarItem.command = 'trendai.scanDirectory';
     statusBarItem.show();
 
     // Initialize command handler
@@ -54,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     );
 
     // Register tree view
-    const treeView = vscode.window.createTreeView('trendmicro.resultsView', {
+    const treeView = vscode.window.createTreeView('trendai.resultsView', {
         treeDataProvider: resultsTreeProvider,
         showCollapseAll: true
     });
@@ -68,46 +68,46 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     // Register commands
     const commands = [
-        vscode.commands.registerCommand('trendmicro.scanDirectory', (uri?: vscode.Uri) =>
+        vscode.commands.registerCommand('trendai.scanDirectory', (uri?: vscode.Uri) =>
             commandHandler.scanDirectory(uri)
         ),
-        vscode.commands.registerCommand('trendmicro.scanFile', (uri?: vscode.Uri) =>
+        vscode.commands.registerCommand('trendai.scanFile', (uri?: vscode.Uri) =>
             commandHandler.scanFile(uri)
         ),
-        vscode.commands.registerCommand('trendmicro.scanImage', () =>
+        vscode.commands.registerCommand('trendai.scanImage', () =>
             commandHandler.scanImage()
         ),
-        vscode.commands.registerCommand('trendmicro.scanTemplate', (uri?: vscode.Uri) =>
+        vscode.commands.registerCommand('trendai.scanTemplate', (uri?: vscode.Uri) =>
             commandHandler.scanTemplate(uri)
         ),
-        vscode.commands.registerCommand('trendmicro.scanTerraformProject', (uri?: vscode.Uri) =>
+        vscode.commands.registerCommand('trendai.scanTerraformProject', (uri?: vscode.Uri) =>
             commandHandler.scanTerraformProject(uri)
         ),
-        vscode.commands.registerCommand('trendmicro.setApiToken', () =>
+        vscode.commands.registerCommand('trendai.setApiToken', () =>
             commandHandler.setApiToken()
         ),
-        vscode.commands.registerCommand('trendmicro.refreshResults', () =>
+        vscode.commands.registerCommand('trendai.refreshResults', () =>
             commandHandler.refreshResults()
         ),
-        vscode.commands.registerCommand('trendmicro.clearResults', () =>
+        vscode.commands.registerCommand('trendai.clearResults', () =>
             commandHandler.clearResults()
         ),
-        vscode.commands.registerCommand('trendmicro.showVulnerabilityFix', (metadata) =>
+        vscode.commands.registerCommand('trendai.showVulnerabilityFix', (metadata) =>
             commandHandler.showVulnerabilityFix(metadata)
         ),
-        vscode.commands.registerCommand('trendmicro.addToGitignore', (filePath: string) =>
+        vscode.commands.registerCommand('trendai.addToGitignore', (filePath: string) =>
             commandHandler.addToGitignore(filePath)
         ),
-        vscode.commands.registerCommand('trendmicro.suppressFinding', (diagnostic, metadata) =>
+        vscode.commands.registerCommand('trendai.suppressFinding', (diagnostic, metadata) =>
             commandHandler.suppressFinding(diagnostic, metadata)
         ),
-        vscode.commands.registerCommand('trendmicro.showResultsPanel', () =>
+        vscode.commands.registerCommand('trendai.showResultsPanel', () =>
             commandHandler.showResultsPanel()
         ),
-        vscode.commands.registerCommand('trendmicro.buildAndScanDockerfile', (uri?: vscode.Uri) =>
+        vscode.commands.registerCommand('trendai.buildAndScanDockerfile', (uri?: vscode.Uri) =>
             commandHandler.buildAndScanDockerfile(uri)
         ),
-        vscode.commands.registerCommand('trendmicro.launchAIScanner', () =>
+        vscode.commands.registerCommand('trendai.launchAIScanner', () =>
             commandHandler.launchAIScanner()
         )
     ];
@@ -153,6 +153,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         ...commands
     );
 
+    // Initialize template scanner (non-blocking)
+    templateScanner.initialize().catch(err => {
+        outputChannel.appendLine(`Template scanner initialization warning: ${err}`);
+    });
+
     // Check for API token and prompt if not configured
     const hasToken = await settingsManager.hasApiToken();
     if (!hasToken) {
@@ -168,6 +173,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }
 
     outputChannel.appendLine('TrendAI™ Security Scanner activated');
+    } catch (error) {
+        outputChannel.appendLine(`Activation error: ${error}`);
+        vscode.window.showErrorMessage(`TrendAI™ Security Scanner failed to activate: ${error}`);
+    }
 }
 
 export function deactivate(): void {

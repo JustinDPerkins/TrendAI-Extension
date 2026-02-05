@@ -1,9 +1,10 @@
 {
-  "name": "trendmicro-security-scanner",
+  "name": "trendai-security-scanner",
   "displayName": "TrendAI™ Security Scanner",
   "description": "Integrate TrendAI™ TMAS and Template Scanner for vulnerability, malware, secrets, and IaC scanning",
   "version": "0.1.0",
-  "publisher": "trendmicro",
+  "publisher": "trendai",
+  "icon": "resources/icons/App-icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -29,61 +30,61 @@
   "contributes": {
     "commands": [
       {
-        "command": "trendmicro.scanDirectory",
+        "command": "trendai.scanDirectory",
         "title": "Scan Directory",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.scanFile",
+        "command": "trendai.scanFile",
         "title": "Scan File",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.scanImage",
+        "command": "trendai.scanImage",
         "title": "Scan Container Image",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.scanTemplate",
+        "command": "trendai.scanTemplate",
         "title": "Scan IaC Template",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.scanTerraformProject",
+        "command": "trendai.scanTerraformProject",
         "title": "Scan Terraform Project",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.setApiToken",
+        "command": "trendai.setApiToken",
         "title": "Set API Token",
         "category": "TrendAI™"
       },
       {
-        "command": "trendmicro.refreshResults",
+        "command": "trendai.refreshResults",
         "title": "Refresh Results",
         "category": "TrendAI™",
         "icon": "$(refresh)"
       },
       {
-        "command": "trendmicro.showResultsPanel",
+        "command": "trendai.showResultsPanel",
         "title": "Show Results Dashboard",
         "category": "TrendAI™",
         "icon": "$(dashboard)"
       },
       {
-        "command": "trendmicro.clearResults",
+        "command": "trendai.clearResults",
         "title": "Clear Results",
         "category": "TrendAI™",
         "icon": "$(clear-all)"
       },
       {
-        "command": "trendmicro.buildAndScanDockerfile",
+        "command": "trendai.buildAndScanDockerfile",
         "title": "Build & Scan Dockerfile",
         "category": "TrendAI™",
         "icon": "$(package)"
       },
       {
-        "command": "trendmicro.launchAIScanner",
+        "command": "trendai.launchAIScanner",
         "title": "Scan LLM Application",
         "category": "TrendAI™",
         "icon": "$(hubot)"
@@ -92,16 +93,16 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "trendmicro-security",
+          "id": "trendai-security",
           "title": "TrendAI™ Security",
-          "icon": "resources/icons/shield.svg"
+          "icon": "resources/icons/trendai-logo.svg"
         }
       ]
     },
     "views": {
-      "trendmicro-security": [
+      "trendai-security": [
         {
-          "id": "trendmicro.resultsView",
+          "id": "trendai.resultsView",
           "name": "Scan Results"
         }
       ]
@@ -109,46 +110,46 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "trendmicro.scanFile",
-          "group": "trendmicro@1",
+          "command": "trendai.scanFile",
+          "group": "trendai@1",
           "when": "explorerResourceIsFolder || resourceExtname"
         },
         {
-          "command": "trendmicro.scanTemplate",
-          "group": "trendmicro@2",
+          "command": "trendai.scanTemplate",
+          "group": "trendai@2",
           "when": "resourceExtname == .tf || resourceExtname == .yaml || resourceExtname == .yml || resourceExtname == .json"
         },
         {
-          "command": "trendmicro.scanTerraformProject",
-          "group": "trendmicro@3",
+          "command": "trendai.scanTerraformProject",
+          "group": "trendai@3",
           "when": "explorerResourceIsFolder"
         },
         {
-          "command": "trendmicro.buildAndScanDockerfile",
-          "group": "trendmicro@4",
+          "command": "trendai.buildAndScanDockerfile",
+          "group": "trendai@4",
           "when": "resourceFilename == Dockerfile || resourceFilename =~ /Dockerfile\\..*/ || resourceFilename =~ /.*\\.dockerfile/"
         }
       ],
       "editor/context": [
         {
-          "command": "trendmicro.scanFile",
-          "group": "trendmicro@1"
+          "command": "trendai.scanFile",
+          "group": "trendai@1"
         },
         {
-          "command": "trendmicro.scanTemplate",
-          "group": "trendmicro@2",
+          "command": "trendai.scanTemplate",
+          "group": "trendai@2",
           "when": "resourceExtname == .tf || resourceExtname == .yaml || resourceExtname == .yml || resourceExtname == .json"
         }
       ],
       "view/title": [
         {
-          "command": "trendmicro.refreshResults",
-          "when": "view == trendmicro.resultsView",
+          "command": "trendai.refreshResults",
+          "when": "view == trendai.resultsView",
           "group": "navigation"
         },
         {
-          "command": "trendmicro.clearResults",
-          "when": "view == trendmicro.resultsView",
+          "command": "trendai.clearResults",
+          "when": "view == trendai.resultsView",
           "group": "navigation"
         }
       ]
@@ -156,7 +157,7 @@
     "configuration": {
       "title": "TrendAI™ Security Scanner",
       "properties": {
-        "trendmicro.visionOneRegion": {
+        "trendai.visionOneRegion": {
           "type": "string",
           "default": "api.xdr.trendmicro.com",
           "enum": [
@@ -166,21 +167,34 @@
             "api.in.xdr.trendmicro.com",
             "api.xdr.trendmicro.co.jp",
             "api.sg.xdr.trendmicro.com",
-            "api.xdr.sg.trendmicro.com"
+            "api.mea.xdr.trendmicro.com",
+            "api.uk.xdr.trendmicro.com",
+            "api.usgov.xdr.trendmicro.com"
+          ],
+          "enumDescriptions": [
+            "United States",
+            "Australia",
+            "Germany",
+            "India",
+            "Japan",
+            "Singapore",
+            "United Arab Emirates",
+            "United Kingdom",
+            "United States (Government)"
           ],
           "description": "Vision One API region endpoint"
         },
-        "trendmicro.tmasPath": {
+        "trendai.tmasPath": {
           "type": "string",
           "default": "",
           "description": "Path to TMAS binary (leave empty for auto-download)"
         },
-        "trendmicro.scanOnSave": {
+        "trendai.scanOnSave": {
           "type": "boolean",
           "default": false,
           "description": "Automatically scan files on save"
         },
-        "trendmicro.severityThreshold": {
+        "trendai.severityThreshold": {
           "type": "string",
           "default": "medium",
           "enum": [
@@ -192,33 +206,47 @@
           ],
           "description": "Minimum severity level to report"
         },
-        "trendmicro.enableVulnerabilities": {
+        "trendai.enableVulnerabilities": {
           "type": "boolean",
           "default": true,
           "description": "Enable vulnerability scanning"
         },
-        "trendmicro.enableMalware": {
+        "trendai.enableMalware": {
           "type": "boolean",
           "default": true,
           "description": "Enable malware scanning (container images only)"
         },
-        "trendmicro.enableSecrets": {
+        "trendai.enableSecrets": {
           "type": "boolean",
           "default": true,
           "description": "Enable secrets scanning"
         },
-        "trendmicro.tmasRegion": {
+        "trendai.tmasRegion": {
           "type": "string",
           "default": "us-east-1",
           "enum": [
             "us-east-1",
+            "ca-central-1",
             "eu-central-1",
-            "ap-southeast-1",
-            "ap-southeast-2",
+            "eu-west-2",
+            "me-central-1",
+            "ap-south-1",
             "ap-northeast-1",
-            "ap-south-1"
+            "ap-southeast-1",
+            "ap-southeast-2"
           ],
-          "description": "TMAS Vision One region for cloud features"
+          "enumDescriptions": [
+            "United States",
+            "Canada",
+            "Germany",
+            "United Kingdom",
+            "United Arab Emirates",
+            "India",
+            "Japan",
+            "Singapore",
+            "Australia"
+          ],
+          "description": "TMAS cloud region"
         }
       }
     }
@@ -236,9 +264,9 @@
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/vsce": "^2.15.0",
     "eslint": "^8.54.0",
-    "typescript": "^5.3.0",
-    "@vscode/vsce": "^2.22.0"
+    "typescript": "^5.3.0"
   },
   "dependencies": {
     "archiver": "^6.0.1",
@@ -246,6 +274,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/trendmicro/vscode-security-scanner"
+    "url": "https://github.com/trendai/vscode-security-scanner"
+  },
+  "overrides": {
+    "undici": "6.19.2"
   }
 }

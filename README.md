@@ -1,6 +1,6 @@
 # TrendAI™ Security Scanner
 
-A VS Code extension that integrates Trend Micro's security scanning capabilities directly into your development environment. Scan for vulnerabilities, malware, secrets, and Infrastructure-as-Code (IaC) misconfigurations without leaving your editor.
+A VS Code extension that integrates TrendAI's security scanning capabilities directly into your development environment. Scan for vulnerabilities, malware, secrets, and Infrastructure-as-Code (IaC) misconfigurations without leaving your editor.
 
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
@@ -114,11 +114,14 @@ Access settings via `File > Preferences > Settings` and search for "trendmicro".
 | Region | Endpoint |
 |--------|----------|
 | United States | `api.xdr.trendmicro.com` |
+| United States (Government) | `api.usgov.xdr.trendmicro.com` |
 | Australia | `api.au.xdr.trendmicro.com` |
-| Europe | `api.eu.xdr.trendmicro.com` |
+| Germany | `api.eu.xdr.trendmicro.com` |
 | India | `api.in.xdr.trendmicro.com` |
 | Japan | `api.xdr.trendmicro.co.jp` |
 | Singapore | `api.sg.xdr.trendmicro.com` |
+| United Arab Emirates | `api.mea.xdr.trendmicro.com` |
+| United Kingdom | `api.uk.xdr.trendmicro.com` |
 
 ## User Interface
 
@@ -236,7 +239,7 @@ Resources:
 
 - API tokens are stored in VS Code's secure storage
 - Tokens are never logged or displayed
-- Template scans upload files to Trend Micro's cloud for analysis
+- Template scans upload files to TrendAI's cloud for analysis
 - Local scans process data on your machine
 
 ## License
@@ -250,4 +253,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-Made with security in mind by Trend Micro
+Made with security in mind by TrendAI

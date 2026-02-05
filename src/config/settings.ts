@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 
-const EXTENSION_ID = 'trendmicro';
-const SECRET_KEY_API_TOKEN = 'trendmicro.apiToken';
+const EXTENSION_ID = 'trendai';
+const SECRET_KEY_API_TOKEN = 'trendai.apiToken';
 
 export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low' | 'negligible';
 
-export interface TrendMicroSettings {
+export interface TrendAISettings {
     visionOneRegion: string;
     tmasPath: string;
     scanOnSave: boolean;
@@ -29,7 +29,7 @@ export class SettingsManager {
         return vscode.workspace.getConfiguration(EXTENSION_ID);
     }
 
-    getSettings(): TrendMicroSettings {
+    getSettings(): TrendAISettings {
         const config = this.getConfig();
         return {
             visionOneRegion: config.get<string>('visionOneRegion', 'api.xdr.trendmicro.com'),
@@ -60,9 +60,9 @@ export class SettingsManager {
         return token !== undefined && token.length > 0;
     }
 
-    async updateSetting<K extends keyof TrendMicroSettings>(
+    async updateSetting<K extends keyof TrendAISettings>(
         key: K,
-        value: TrendMicroSettings[K],
+        value: TrendAISettings[K],
         target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global
     ): Promise<void> {
         const config = this.getConfig();
@@ -137,7 +137,7 @@ export class SettingsManager {
         const hasToken = await this.hasApiToken();
 
         if (!hasToken) {
-            errors.push('API token is not configured. Use "Trend Micro: Set API Token" command.');
+            errors.push('API token is not configured. Use "TrendAI: Set API Token" command.');
         }
 
         return errors;
