@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBarItem.text = '$(shield) TrendAI™';
     statusBarItem.tooltip = 'TrendAI™ Security Scanner';
-    statusBarItem.command = 'trendai.scanDirectory';
+    statusBarItem.command = 'trendai.scan';
     statusBarItem.show();
 
     // Initialize command handler
@@ -50,7 +50,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         settingsManager,
         outputChannel,
         statusBarItem,
-        context.extensionUri
+        context.extensionUri,
+        context
     );
 
     // Register tree view
@@ -68,23 +69,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     // Register commands
     const commands = [
-        vscode.commands.registerCommand('trendai.scanDirectory', (uri?: vscode.Uri) =>
-            commandHandler.scanDirectory(uri)
+        // Primary scan commands
+        vscode.commands.registerCommand('trendai.scan', (uri?: vscode.Uri) =>
+            commandHandler.scan(uri)
         ),
-        vscode.commands.registerCommand('trendai.scanFile', (uri?: vscode.Uri) =>
-            commandHandler.scanFile(uri)
+        vscode.commands.registerCommand('trendai.scanLLMEndpoint', () =>
+            commandHandler.scanLLMEndpoint()
         ),
-        vscode.commands.registerCommand('trendai.scanImage', () =>
-            commandHandler.scanImage()
+        vscode.commands.registerCommand('trendai.buildAndScanDockerfile', (uri?: vscode.Uri) =>
+            commandHandler.buildAndScanDockerfile(uri)
         ),
-        vscode.commands.registerCommand('trendai.scanTemplate', (uri?: vscode.Uri) =>
-            commandHandler.scanTemplate(uri)
-        ),
-        vscode.commands.registerCommand('trendai.scanTerraformProject', (uri?: vscode.Uri) =>
-            commandHandler.scanTerraformProject(uri)
-        ),
+        // Configuration
         vscode.commands.registerCommand('trendai.setApiToken', () =>
             commandHandler.setApiToken()
+        ),
+        // Results management
+        vscode.commands.registerCommand('trendai.showResultsPanel', () =>
+            commandHandler.showResultsPanel()
         ),
         vscode.commands.registerCommand('trendai.refreshResults', () =>
             commandHandler.refreshResults()
@@ -92,6 +93,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('trendai.clearResults', () =>
             commandHandler.clearResults()
         ),
+        // Quick fixes
         vscode.commands.registerCommand('trendai.showVulnerabilityFix', (metadata) =>
             commandHandler.showVulnerabilityFix(metadata)
         ),
@@ -100,15 +102,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         ),
         vscode.commands.registerCommand('trendai.suppressFinding', (diagnostic, metadata) =>
             commandHandler.suppressFinding(diagnostic, metadata)
-        ),
-        vscode.commands.registerCommand('trendai.showResultsPanel', () =>
-            commandHandler.showResultsPanel()
-        ),
-        vscode.commands.registerCommand('trendai.buildAndScanDockerfile', (uri?: vscode.Uri) =>
-            commandHandler.buildAndScanDockerfile(uri)
-        ),
-        vscode.commands.registerCommand('trendai.launchAIScanner', () =>
-            commandHandler.launchAIScanner()
         )
     ];
 

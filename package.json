@@ -3,7 +3,7 @@
   "displayName": "TrendAI™ Security Scanner",
   "description": "Integrate TrendAI™ TMAS and Template Scanner for vulnerability, malware, secrets, and IaC scanning",
   "version": "0.1.0",
-  "publisher": "trendai",
+  "publisher": "JustinDPerkins",
   "icon": "resources/icons/App-icon.png",
   "engines": {
     "vscode": "^1.85.0"
@@ -21,7 +21,17 @@
     "cloudformation",
     "iac",
     "trend micro",
-    "tmas"
+    "trendai",
+    "trendai security scanner",
+    "trendai security",
+    "trendai security extension",
+    "trendai security extension for vscode",
+    "trendai security extension for cursor",
+    "trendai security extension for vscode",
+    "tmas",
+    "llm",
+    "ai security",
+    "prompt injection"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -30,52 +40,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "trendai.scanDirectory",
-        "title": "Scan Directory",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.scanFile",
-        "title": "Scan File",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.scanImage",
-        "title": "Scan Container Image",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.scanTemplate",
-        "title": "Scan IaC Template",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.scanTerraformProject",
-        "title": "Scan Terraform Project",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.setApiToken",
-        "title": "Set API Token",
-        "category": "TrendAI™"
-      },
-      {
-        "command": "trendai.refreshResults",
-        "title": "Refresh Results",
+        "command": "trendai.scan",
+        "title": "Scan (IaC, Secrets, Vulns)",
         "category": "TrendAI™",
-        "icon": "$(refresh)"
+        "icon": "$(shield)"
       },
       {
-        "command": "trendai.showResultsPanel",
-        "title": "Show Results Dashboard",
+        "command": "trendai.scanLLMEndpoint",
+        "title": "LLM Scan (AI Security)",
         "category": "TrendAI™",
-        "icon": "$(dashboard)"
-      },
-      {
-        "command": "trendai.clearResults",
-        "title": "Clear Results",
-        "category": "TrendAI™",
-        "icon": "$(clear-all)"
+        "icon": "$(hubot)"
       },
       {
         "command": "trendai.buildAndScanDockerfile",
@@ -84,10 +58,27 @@
         "icon": "$(package)"
       },
       {
-        "command": "trendai.launchAIScanner",
-        "title": "Scan LLM Application",
+        "command": "trendai.setApiToken",
+        "title": "Set API Token",
+        "category": "TrendAI™"
+      },
+      {
+        "command": "trendai.showResultsPanel",
+        "title": "Show Results Dashboard",
         "category": "TrendAI™",
-        "icon": "$(hubot)"
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "trendai.refreshResults",
+        "title": "Refresh Results",
+        "category": "TrendAI™",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "trendai.clearResults",
+        "title": "Clear Results",
+        "category": "TrendAI™",
+        "icon": "$(clear-all)"
       }
     ],
     "viewsContainers": {
@@ -110,35 +101,20 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "trendai.scanFile",
+          "command": "trendai.scan",
           "group": "trendai@1",
           "when": "explorerResourceIsFolder || resourceExtname"
         },
         {
-          "command": "trendai.scanTemplate",
-          "group": "trendai@2",
-          "when": "resourceExtname == .tf || resourceExtname == .yaml || resourceExtname == .yml || resourceExtname == .json"
-        },
-        {
-          "command": "trendai.scanTerraformProject",
-          "group": "trendai@3",
-          "when": "explorerResourceIsFolder"
-        },
-        {
           "command": "trendai.buildAndScanDockerfile",
-          "group": "trendai@4",
+          "group": "trendai@2",
           "when": "resourceFilename == Dockerfile || resourceFilename =~ /Dockerfile\\..*/ || resourceFilename =~ /.*\\.dockerfile/"
         }
       ],
       "editor/context": [
         {
-          "command": "trendai.scanFile",
+          "command": "trendai.scan",
           "group": "trendai@1"
-        },
-        {
-          "command": "trendai.scanTemplate",
-          "group": "trendai@2",
-          "when": "resourceExtname == .tf || resourceExtname == .yaml || resourceExtname == .yml || resourceExtname == .json"
         }
       ],
       "view/title": [
@@ -247,6 +223,11 @@
             "Australia"
           ],
           "description": "TMAS cloud region"
+        },
+        "trendai.useTerraformPlan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate Terraform plan JSON for more accurate scanning (requires terraform CLI and cloud credentials)"
         }
       }
     }
@@ -272,10 +253,17 @@
     "archiver": "^6.0.1",
     "js-yaml": "^4.1.0"
   },
+  "author": {
+    "name": "Justin Perkins"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/trendai/vscode-security-scanner"
+    "url": "https://github.com/JustinDPerkins/TrendAI-Extension"
   },
+  "bugs": {
+    "url": "https://github.com/JustinDPerkins/TrendAI-Extension/issues"
+  },
+  "homepage": "https://github.com/JustinDPerkins/TrendAI-Extension#readme",
   "overrides": {
     "undici": "6.19.2"
   }

@@ -14,6 +14,7 @@ export interface TrendAISettings {
     enableMalware: boolean;
     enableSecrets: boolean;
     tmasRegion: string;
+    useTerraformPlan: boolean;
 }
 
 export class SettingsManager {
@@ -39,8 +40,13 @@ export class SettingsManager {
             enableVulnerabilities: config.get<boolean>('enableVulnerabilities', true),
             enableMalware: config.get<boolean>('enableMalware', true),
             enableSecrets: config.get<boolean>('enableSecrets', true),
-            tmasRegion: config.get<string>('tmasRegion', 'us-east-1')
+            tmasRegion: config.get<string>('tmasRegion', 'us-east-1'),
+            useTerraformPlan: config.get<boolean>('useTerraformPlan', true)
         };
+    }
+
+    shouldUseTerraformPlan(): boolean {
+        return this.getSettings().useTerraformPlan;
     }
 
     async getApiToken(): Promise<string | undefined> {

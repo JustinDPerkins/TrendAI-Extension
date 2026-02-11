@@ -218,9 +218,127 @@ export class TemplateScanner {
 
         this.outputChannel.appendLine(`Found ${tfFiles.length} Terraform files in ${dirPath}`);
 
-        // Create archive and scan
+        // Try to generate and use Terraform plan JSON (more reliable)
+        const settings = this.settingsManager.getSettings();
+        if (settings.useTerraformPlan) {
+            try {
+                const planJson = await this.generateTerraformPlanJson(dirPath);
+                if (planJson) {
+                    this.outputChannel.appendLine('Using Terraform plan JSON for scanning');
+                    return await this.scanTerraformPlanJson(planJson, dirPath);
+                }
+            } catch (err) {
+                this.outputChannel.appendLine(`Terraform plan generation failed: ${err}`);
+                this.outputChannel.appendLine('Falling back to HCL archive scanning...');
+            }
+        } else {
+            this.outputChannel.appendLine('Terraform plan generation disabled, using HCL archive');
+        }
+
+        // Fallback: Create archive and scan raw HCL
         const archive = await createTerraformArchive(dirPath);
-        return await this.scanTerraformArchive(archive);
+        return await this.scanTerraformArchive(archive, dirPath);
+    }
+
+    /**
+     * Generate Terraform plan JSON from a directory
+     * Returns the plan JSON content, or null if terraform is not available
+     */
+    private async generateTerraformPlanJson(dirPath: string): Promise<string | null> {
+        const { exec } = require('child_process');
+        const fs = require('fs');
+        const path = require('path');
+        const os = require('os');
+
+        // Check if terraform is available
+        const terraformAvailable = await new Promise<boolean>((resolve) => {
+            exec('terraform version', { timeout: 5000 }, (error: Error | null) => {
+                resolve(!error);
+            });
+        });
+
+        if (!terraformAvailable) {
+            this.outputChannel.appendLine('Terraform CLI not found, skipping plan generation');
+            return null;
+        }
+
+        const tempPlanFile = path.join(os.tmpdir(), `trendai-tfplan-${Date.now()}`);
+
+        try {
+            // Check if already initialized
+            const tfDirExists = fs.existsSync(path.join(dirPath, '.terraform'));
+
+            if (!tfDirExists) {
+                this.outputChannel.appendLine('Running terraform init...');
+                await this.runTerraformCommand('terraform init -backend=false -input=false', dirPath);
+            }
+
+            // Generate plan
+            this.outputChannel.appendLine('Running terraform plan...');
+            await this.runTerraformCommand(`terraform plan -out="${tempPlanFile}" -input=false`, dirPath);
+
+            // Convert to JSON - capture stdout directly instead of shell redirection
+            this.outputChannel.appendLine('Converting plan to JSON...');
+            const planJson = await this.runTerraformCommand(`terraform show -json "${tempPlanFile}"`, dirPath);
+
+            if (!planJson || planJson.trim().length === 0) {
+                throw new Error('Terraform show returned empty output');
+            }
+
+            this.outputChannel.appendLine(`Plan JSON size: ${planJson.length} bytes`);
+
+            // Cleanup
+            if (fs.existsSync(tempPlanFile)) fs.unlinkSync(tempPlanFile);
+
+            return planJson;
+        } catch (err) {
+            // Cleanup on error
+            if (fs.existsSync(tempPlanFile)) fs.unlinkSync(tempPlanFile);
+            throw err;
+        }
+    }
+
+    /**
+     * Run a terraform command in a directory
+     */
+    private runTerraformCommand(command: string, cwd: string): Promise<string> {
+        const { exec } = require('child_process');
+
+        return new Promise((resolve, reject) => {
+            exec(command, {
+                cwd,
+                timeout: 120000,
+                maxBuffer: 50 * 1024 * 1024,
+                shell: true
+            }, (error: Error | null, stdout: string, stderr: string) => {
+                if (error) {
+                    this.outputChannel.appendLine(`Command failed: ${command}`);
+                    this.outputChannel.appendLine(`stderr: ${stderr}`);
+                    reject(new Error(`Terraform command failed: ${stderr || error.message}`));
+                    return;
+                }
+                resolve(stdout);
+            });
+        });
+    }
+
+    /**
+     * Scan Terraform plan JSON content
+     */
+    private async scanTerraformPlanJson(planJson: string, dirPath?: string): Promise<TemplateScanResult> {
+        await this.updateCredentials();
+
+        this.outputChannel.appendLine('Scanning Terraform plan JSON...');
+
+        const response = await this.apiClient.post<ApiScanResponse>(
+            '/beta/cloudPosture/scanTemplate',
+            {
+                type: 'terraform-template',
+                content: planJson
+            }
+        );
+
+        return this.parseApiResponse(response.data, 'terraform', dirPath);
     }
 
     async scanFile(filePath: string): Promise<TemplateScanResult> {

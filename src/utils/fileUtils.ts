@@ -102,6 +102,38 @@ export function findTerraformFiles(dirPath: string): string[] {
     return files;
 }
 
+export function findIaCFiles(dirPath: string): { terraform: string[]; cloudformation: string[] } {
+    const terraform: string[] = [];
+    const cloudformation: string[] = [];
+
+    function walk(dir: string): void {
+        try {
+            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            for (const entry of entries) {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    // Skip common non-essential directories
+                    if (!entry.name.startsWith('.') && entry.name !== 'node_modules' && entry.name !== 'dist' && entry.name !== 'build') {
+                        walk(fullPath);
+                    }
+                } else if (entry.name.endsWith('.tf')) {
+                    terraform.push(fullPath);
+                } else if (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml') || entry.name.endsWith('.json')) {
+                    // Check if it's a CloudFormation file
+                    if (isCloudFormationFile(fullPath)) {
+                        cloudformation.push(fullPath);
+                    }
+                }
+            }
+        } catch {
+            // Ignore permission errors
+        }
+    }
+
+    walk(dirPath);
+    return { terraform, cloudformation };
+}
+
 export function getPlatformInfo(): { platform: NodeJS.Platform; arch: string } {
     const platform = os.platform();
     let arch = os.arch();

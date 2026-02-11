@@ -69,7 +69,18 @@ export class VisionOneApiClient {
                     }
 
                     if (res.statusCode && res.statusCode >= 400) {
-                        const error: ApiError = new Error(`API request failed with status ${res.statusCode}`);
+                        // Extract error message from response if available
+                        let errorDetail = '';
+                        if (data && typeof data === 'object') {
+                            const d = data as Record<string, unknown>;
+                            if (d.message) errorDetail = String(d.message);
+                            else if (d.error) errorDetail = typeof d.error === 'string' ? d.error : JSON.stringify(d.error);
+                            else if (d.detail) errorDetail = String(d.detail);
+                            else errorDetail = JSON.stringify(data).substring(0, 200);
+                        }
+                        const error: ApiError = new Error(
+                            `API request failed with status ${res.statusCode}${errorDetail ? `: ${errorDetail}` : ''}`
+                        );
                         error.status = res.statusCode;
                         error.response = data;
                         reject(error);
@@ -138,7 +149,17 @@ export class VisionOneApiClient {
                     }
 
                     if (res.statusCode && res.statusCode >= 400) {
-                        const error: ApiError = new Error(`API request failed with status ${res.statusCode}`);
+                        let errorDetail = '';
+                        if (responseData && typeof responseData === 'object') {
+                            const d = responseData as Record<string, unknown>;
+                            if (d.message) errorDetail = String(d.message);
+                            else if (d.error) errorDetail = typeof d.error === 'string' ? d.error : JSON.stringify(d.error);
+                            else if (d.detail) errorDetail = String(d.detail);
+                            else errorDetail = JSON.stringify(responseData).substring(0, 200);
+                        }
+                        const error: ApiError = new Error(
+                            `API request failed with status ${res.statusCode}${errorDetail ? `: ${errorDetail}` : ''}`
+                        );
                         error.status = res.statusCode;
                         error.response = responseData;
                         reject(error);
@@ -225,7 +246,17 @@ export class VisionOneApiClient {
                     }
 
                     if (res.statusCode && res.statusCode >= 400) {
-                        const error: ApiError = new Error(`API request failed with status ${res.statusCode}`);
+                        let errorDetail = '';
+                        if (responseData && typeof responseData === 'object') {
+                            const d = responseData as Record<string, unknown>;
+                            if (d.message) errorDetail = String(d.message);
+                            else if (d.error) errorDetail = typeof d.error === 'string' ? d.error : JSON.stringify(d.error);
+                            else if (d.detail) errorDetail = String(d.detail);
+                            else errorDetail = JSON.stringify(responseData).substring(0, 200);
+                        }
+                        const error: ApiError = new Error(
+                            `API request failed with status ${res.statusCode}${errorDetail ? `: ${errorDetail}` : ''}`
+                        );
                         error.status = res.statusCode;
                         error.response = responseData;
                         reject(error);
