@@ -7,6 +7,8 @@ A VS Code extension that integrates TrendAI's security scanning capabilities dir
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
+![Demo](demo.gif)
+
 ## Features
 
 ### Unified Security Scanning
