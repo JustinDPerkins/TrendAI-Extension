@@ -2,22 +2,14 @@
   "name": "trendai-security-scanner",
   "displayName": "TrendAI™ Security Scanner",
   "description": "Integrate TrendAI™ TMAS and Template Scanner for vulnerability, malware, secrets, and IaC scanning",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "publisher": "JustinDPerkins",
   "icon": "resources/icons/App-icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "AI",
-    "Cloud",
-    "Docker",
-    "Vulnerabilities",
-    "Security",
-    "Terraform",
-    "CloudFormation",
-    "Secrets",
-    "Malware",
+    "Linters",
     "Other"
   ],
   "keywords": [

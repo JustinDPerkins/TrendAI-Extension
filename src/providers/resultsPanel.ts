@@ -454,8 +454,8 @@ export class ResultsPanelProvider {
             font-size: 13px;
             color: var(--text-primary);
             background: var(--bg-primary);
-            padding: 24px 32px;
-            line-height: 1.6;
+            padding: 16px 24px;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -464,11 +464,22 @@ export class ResultsPanelProvider {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            height: 20px;
+            width: auto;
         }
 
         .header h1 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             letter-spacing: -0.3px;
             color: var(--text-primary);
@@ -477,32 +488,49 @@ export class ResultsPanelProvider {
         .header-meta {
             display: flex;
             align-items: center;
-            gap: 16px;
-            font-size: 12px;
+            gap: 12px;
+            font-size: 11px;
             color: var(--text-muted);
+        }
+
+        /* Tech Icons - Using local SVG files */
+        .tech-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .tech-icon img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
 
         /* Summary Stats */
         .summary {
             display: flex;
-            gap: 12px;
-            margin-bottom: 28px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 16px;
+            gap: 6px;
+            padding: 8px 12px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            min-width: 100px;
+            border-radius: 4px;
+            min-width: 80px;
         }
 
         .stat-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
         }
 
@@ -517,27 +545,27 @@ export class ResultsPanelProvider {
         }
 
         .stat-value {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
             line-height: 1.2;
             color: var(--text-primary);
         }
 
         .stat-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         /* Progress Bar */
         .severity-bar {
-            height: 4px;
+            height: 3px;
             background: var(--border-subtle);
             border-radius: 2px;
             overflow: hidden;
             display: flex;
-            margin-bottom: 28px;
+            margin-bottom: 16px;
         }
 
         .severity-bar-segment {
@@ -555,24 +583,24 @@ export class ResultsPanelProvider {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--border-subtle);
         }
 
         .filters {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
 
         .filter-btn {
             background: transparent;
             border: 1px solid var(--border-subtle);
             color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             transition: all 0.15s ease;
         }
@@ -614,26 +642,26 @@ export class ResultsPanelProvider {
 
         /* Section Title */
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
+            letter-spacing: 0.4px;
+            margin-bottom: 10px;
         }
 
         /* Findings List */
         .findings-list {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
         }
 
         /* Finding Row */
         .finding-row {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
             transition: border-color 0.15s ease;
         }
@@ -649,14 +677,14 @@ export class ResultsPanelProvider {
         .finding-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 8px;
+            padding: 8px 12px;
             cursor: pointer;
         }
 
         .severity-indicator {
             width: 3px;
-            height: 32px;
+            height: 24px;
             border-radius: 2px;
             flex-shrink: 0;
         }
@@ -672,7 +700,7 @@ export class ResultsPanelProvider {
         }
 
         .finding-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-primary);
             white-space: nowrap;
@@ -681,21 +709,21 @@ export class ResultsPanelProvider {
         }
 
         .finding-subtitle {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .finding-badges {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
         }
 
         .badge {
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -728,11 +756,11 @@ export class ResultsPanelProvider {
         }
 
         .finding-location {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 3px;
+            padding: 2px 6px;
+            border-radius: 2px;
             transition: all 0.15s ease;
         }
 
@@ -754,7 +782,7 @@ export class ResultsPanelProvider {
         /* Finding Details */
         .finding-details {
             display: none;
-            padding: 16px 16px 16px 32px;
+            padding: 12px 12px 12px 24px;
             background: var(--bg-primary);
             border-top: 1px solid var(--border-subtle);
         }
@@ -765,10 +793,10 @@ export class ResultsPanelProvider {
 
         .detail-grid {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 8px 16px;
-            font-size: 12px;
-            margin-bottom: 16px;
+            grid-template-columns: 100px 1fr;
+            gap: 4px 12px;
+            font-size: 11px;
+            margin-bottom: 12px;
         }
 
         .detail-label {
@@ -782,60 +810,60 @@ export class ResultsPanelProvider {
 
         .compliance-list {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             flex-wrap: wrap;
         }
 
         .compliance-tag {
-            padding: 2px 6px;
+            padding: 1px 5px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 3px;
-            font-size: 10px;
+            border-radius: 2px;
+            font-size: 9px;
             color: var(--text-secondary);
         }
 
         .detail-section {
-            margin-top: 16px;
+            margin-top: 10px;
         }
 
         .detail-section-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
         }
 
         .detail-section p {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .resolution-box {
             background: var(--bg-elevated);
             border-left: 2px solid var(--accent-color);
-            padding: 12px 16px;
-            font-size: 12px;
+            padding: 8px 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.5;
             white-space: pre-wrap;
         }
 
         .link-btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 12px;
-            padding: 8px 14px;
+            gap: 4px;
+            margin-top: 8px;
+            padding: 5px 10px;
             background: transparent;
             border: 1px solid var(--border-default);
             color: var(--text-secondary);
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             transition: all 0.15s ease;
         }
@@ -848,18 +876,18 @@ export class ResultsPanelProvider {
 
         /* File Groups */
         .file-group {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .file-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 8px;
+            padding: 8px 12px;
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-subtle);
             cursor: pointer;
@@ -871,8 +899,8 @@ export class ResultsPanelProvider {
         }
 
         .file-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
         }
 
@@ -883,20 +911,20 @@ export class ResultsPanelProvider {
 
         .file-name {
             flex: 1;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
             font-family: 'SF Mono', Consolas, monospace;
         }
 
         .file-count {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
         }
 
         .file-expand-icon {
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 11px;
             transition: transform 0.2s ease;
         }
 
@@ -909,22 +937,22 @@ export class ResultsPanelProvider {
         }
 
         .file-findings {
-            padding: 12px;
+            padding: 8px;
         }
 
         /* Resource Groups */
         .resource-group {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .resource-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
+            gap: 6px;
+            padding: 6px 10px;
             background: var(--bg-primary);
             border: 1px solid var(--border-subtle);
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             transition: all 0.15s ease;
         }
@@ -934,8 +962,8 @@ export class ResultsPanelProvider {
         }
 
         .resource-indicator {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
         }
 
@@ -946,19 +974,19 @@ export class ResultsPanelProvider {
 
         .resource-name {
             flex: 1;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: var(--text-secondary);
         }
 
         .resource-count {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-muted);
         }
 
         .resource-expand-icon {
             color: var(--text-muted);
-            font-size: 10px;
+            font-size: 9px;
             transition: transform 0.2s ease;
         }
 
@@ -971,7 +999,7 @@ export class ResultsPanelProvider {
         }
 
         .resource-findings {
-            padding: 8px 0 8px 20px;
+            padding: 4px 0 4px 16px;
         }
 
         /* Empty State */
@@ -1149,20 +1177,20 @@ export class ResultsPanelProvider {
         /* Type Tabs */
         .type-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .type-tab {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
+            gap: 6px;
+            padding: 6px 12px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
             color: var(--text-secondary);
             transition: all 0.15s ease;
@@ -1180,10 +1208,10 @@ export class ResultsPanelProvider {
         }
 
         .type-tab .count {
-            padding: 2px 8px;
+            padding: 1px 6px;
             background: var(--bg-primary);
-            border-radius: 10px;
-            font-size: 11px;
+            border-radius: 8px;
+            font-size: 10px;
             font-weight: 600;
         }
 
@@ -1195,23 +1223,23 @@ export class ResultsPanelProvider {
         .tabs {
             display: flex;
             gap: 0;
-            margin-bottom: 28px;
+            margin-bottom: 16px;
             border-bottom: 1px solid var(--border-subtle);
         }
 
         .tab {
-            padding: 12px 20px;
+            padding: 8px 16px;
             background: transparent;
             border: none;
             border-bottom: 2px solid transparent;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             transition: all 0.15s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .tab:hover {
@@ -1226,9 +1254,9 @@ export class ResultsPanelProvider {
         .tab .badge {
             background: var(--bg-elevated);
             color: var(--text-muted);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
             font-weight: 600;
         }
 
@@ -1466,9 +1494,24 @@ export class ResultsPanelProvider {
 </head>
 <body>
     <div class="header">
-        <h1>Security Scan Results</h1>
+        <div class="header-left">
+            <svg class="header-logo" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M31.8187 3.58109V6.73022H36.9232V20.3431H40.3276V6.73022H45.454V3.58109H31.8187Z" fill="var(--text-primary)"/>
+                <path d="M51.7366 7.66468C50.1406 7.56835 48.5064 7.87325 47.5768 9.35806L47.3655 7.86637H44.3877V20.3431H47.6964V14.4961C47.6964 13.6594 47.8419 12.9725 48.1329 12.4353C48.9363 10.9574 50.5468 10.8286 52.1153 10.8737V7.67667C52.0355 7.67667 51.91 7.67268 51.7366 7.66468Z" fill="var(--text-primary)"/>
+                <path d="M64.2797 11.4289C63.7949 9.94462 62.7843 8.75345 61.3477 8.12598C59.6901 7.3796 57.0899 7.52575 55.5814 8.48143C53.5959 9.68012 52.678 11.7751 52.6873 14.1646C52.6845 16.5059 53.5418 18.5926 55.5236 19.728C57.0535 20.6324 59.5544 20.7456 61.3357 20.0954C62.9796 19.5092 64.1296 18.2636 64.5029 16.485H61.2421C60.7287 17.8361 58.3795 17.9552 57.3075 17.3477C56.4864 16.8937 56.0679 16.027 55.9721 15.1112H64.5029C64.6035 14.6887 64.6182 14.2922 64.6205 13.8551C64.6364 12.9884 64.5228 12.1797 64.2797 11.4289ZM56.0438 12.7907C56.1486 11.3249 57.2451 10.312 58.7845 10.3525C60.3126 10.3041 61.4035 11.3251 61.4553 12.7907H56.0438Z" fill="var(--text-primary)"/>
+                <path d="M77.1038 10.5302C76.8128 9.6536 76.3324 8.95468 75.6627 8.43349C73.959 7.14822 70.4768 7.43118 69.0334 9.31013L68.868 7.86637H65.7726V20.3431H69.0813V14.1866C69.0813 13.5396 69.1829 12.9485 69.3882 12.4113C69.5935 11.8762 69.9084 11.4488 70.333 11.1333C70.9894 10.6028 72.3788 10.484 73.0995 10.9436C73.3985 11.1333 73.6297 11.3869 73.7951 11.7024C74.1401 12.3444 74.2273 13.1522 74.2336 13.8791V20.3431H77.5423V13.4537C77.5423 12.3814 77.3948 11.4049 77.1038 10.5302Z" fill="var(--text-primary)"/>
+                <path d="M87.9567 3.58101V9.02659C87.1174 8.04276 85.7433 7.6679 84.4826 7.65267C80.6449 7.57899 78.5861 10.4676 78.6227 14.0928C78.5908 17.531 80.4848 20.5917 84.2235 20.5088C85.6464 20.5056 87.1035 20.0839 88.0045 18.9472L88.0504 20.3431H91.2654V3.58101H87.9567ZM87.6258 15.7502C87.1344 16.8735 86.2001 17.546 84.8852 17.5254C83.4892 17.5649 82.4034 16.7503 82.0848 15.4306C81.8429 14.4919 81.8889 13.374 82.2024 12.4713C82.6172 11.3056 83.5639 10.6659 84.8852 10.684C86.2024 10.6703 87.1491 11.2403 87.6378 12.3754C88.062 13.3829 88.0687 14.7348 87.6258 15.7502Z" fill="var(--text-primary)"/>
+                <path d="M110.426 3.58101V20.3431H113.805V3.58101H110.426Z" fill="var(--text-primary)"/>
+                <path d="M105.601 20.3431H109.241L102.789 3.57901H99.0095L92.4858 20.3431H96.1254L97.3508 16.9553C99.6306 17.5055 102.099 17.5064 104.379 16.9529L105.601 20.3431ZM98.3873 14.0518L98.3877 14.0508L100.899 7.17945L103.363 14.0475C101.539 14.3618 100.453 14.4009 98.3873 14.0518Z" fill="var(--text-primary)"/>
+                <path d="M116.575 3.78987H115.901V3.58101H117.474V3.78987H116.8V5.58377H116.575V3.78987Z" fill="var(--text-primary)"/>
+                <path d="M117.887 3.58101H118.115L118.843 4.67385L119.571 3.58101H119.8V5.58377H119.574V3.96147L118.846 5.03442H118.835L118.106 3.9644V5.58377H117.887V3.58101Z" fill="var(--text-primary)"/>
+                <path d="M6.96222 9.35451C8.07448 10.4895 9.15806 11.8946 9.40997 13.3781C9.86335 10.8353 13.2843 7.3741 15.8378 6.93567C13.301 6.52454 9.81308 3.03499 9.41016 0.487976C8.95338 3.00104 5.5085 6.49335 2.9821 6.93194C4.4545 7.18582 5.83181 8.25001 6.96222 9.35451Z" fill="#D71920"/>
+                <path d="M27.213 2.07553C24.5879 -1.06058 19.7076 -0.10279 15.9381 1.43011C21.9204 -0.460249 27.4062 2.02712 24.5436 9.13743C23.1255 12.6331 19.5587 16.2087 16.1405 18.2299C14.3356 19.3968 12.4048 20.3795 10.3009 20.6737C7.06406 21.1179 5.12422 19.4468 5.94753 16.1075C6.15515 15.2921 6.5331 14.4689 6.90833 13.668C6.2906 12.2019 4.96151 10.7021 3.53516 10.2853C2.76628 11.4421 2.20686 12.4894 1.63765 14.1086C0.349495 17.5885 0.770259 22.6983 5.17193 23.8039C13.2271 25.4088 24.1238 16.8467 27.2253 9.71133C28.5528 6.70416 28.6477 3.92461 27.213 2.07553Z" fill="#D71920"/>
+            </svg>
+            <h1>Security Report</h1>
+        </div>
         <div class="header-meta">
-            <span>${total} issues found</span>
+            <span>${total} issues</span>
         </div>
     </div>
 
@@ -1790,12 +1833,14 @@ export class ResultsPanelProvider {
                 return bMax - aMax;
             });
 
+            const fileIcon = this.getFileIcon(file);
             html += `
             <div class="file-group" data-file="${this.escapeHtml(file)}">
                 <div class="file-header" onclick="toggleFile('${this.escapeHtml(file).replace(/'/g, "\\'")}')">
                     <span class="file-indicator ${fileSevClass}"></span>
+                    ${fileIcon}
                     <span class="file-name">${this.escapeHtml(fileName)}</span>
-                    <span class="file-count">${fileFindings.length} issues</span>
+                    <span class="file-count">${fileFindings.length}</span>
                     <span class="file-expand-icon">›</span>
                 </div>
                 <div class="file-findings">`;
@@ -1827,10 +1872,12 @@ export class ResultsPanelProvider {
                         : `<span class="badge badge-nofix">No Fix</span>`)
                     : '';
 
+                const techIcon = this.getTechIcon(finding);
                 html += `
                     <div class="finding-row" id="finding-${findingIndex}" data-severity="${sevClass}">
                         <div class="finding-header" onclick="toggleFinding(${findingIndex})">
                             <div class="severity-indicator ${sevClass}"></div>
+                            ${techIcon}
                             <div class="finding-main">
                                 <div class="finding-title">${this.escapeHtml(finding.title)}</div>
                                 <div class="finding-subtitle">${this.escapeHtml(finding.ruleId)}${finding.service ? ` · ${finding.service}` : ''}</div>
@@ -1894,7 +1941,7 @@ export class ResultsPanelProvider {
             html += `
             <div class="llm-scan-card">
                 <div class="llm-scan-header">
-                    <div class="llm-icon">AI</div>
+                    <div class="llm-icon"><img src="${this.getIconUri('ai-svgrepo-com.svg')}" alt="AI" style="width: 24px; height: 24px;"></div>
                     <div class="info">
                         <div class="model-name">${this.escapeHtml(result.details.model)}</div>
                         <div class="endpoint">${this.escapeHtml(result.details.endpoint)}</div>
@@ -1999,6 +2046,100 @@ export class ResultsPanelProvider {
     private getShortPath(filePath: string): string {
         const parts = filePath.split('/');
         return parts.length > 2 ? `.../${parts.slice(-2).join('/')}` : filePath;
+    }
+
+    private getIconUri(iconName: string): string {
+        const iconPath = vscode.Uri.joinPath(this.extensionUri, 'resources', 'icons', iconName);
+        return this.panel.webview.asWebviewUri(iconPath).toString();
+    }
+
+    private getFileIcon(filePath: string): string {
+        const file = filePath.toLowerCase();
+
+        if (file.includes('dockerfile') || file.endsWith('.dockerfile')) {
+            return `<span class="tech-icon" title="Docker"><img src="${this.getIconUri('docker2-svgrepo-com.svg')}" alt="Docker"></span>`;
+        }
+        if (file.endsWith('.tf') || file.includes('terraform')) {
+            return `<span class="tech-icon" title="Terraform"><img src="${this.getIconUri('terraform-svgrepo-com.svg')}" alt="Terraform"></span>`;
+        }
+        if (file.endsWith('.py') || file.includes('requirements.txt') || file.includes('pyproject.toml') || file.includes('pipfile')) {
+            return `<span class="tech-icon" title="Python"><img src="${this.getIconUri('python-svgrepo-com.svg')}" alt="Python"></span>`;
+        }
+        if (file.endsWith('.go') || file.includes('go.mod') || file.includes('go.sum')) {
+            return `<span class="tech-icon" title="Go"><img src="${this.getIconUri('go-svgrepo-com.svg')}" alt="Go"></span>`;
+        }
+        if (file.endsWith('.rb') || file.includes('gemfile') || file.includes('.gemspec')) {
+            return `<span class="tech-icon" title="Ruby"><img src="${this.getIconUri('ruby-svgrepo-com.svg')}" alt="Ruby"></span>`;
+        }
+        if (file.endsWith('.js') || file.endsWith('.mjs') || file.endsWith('.cjs') || file.endsWith('.ts') || file.endsWith('.tsx') || file.includes('package.json') || file.includes('package-lock.json') || file.includes('yarn.lock')) {
+            return `<span class="tech-icon" title="Node.js"><img src="${this.getIconUri('nodejs-svgrepo-com.svg')}" alt="Node.js"></span>`;
+        }
+        if (file.endsWith('.java') || file.includes('pom.xml') || file.includes('build.gradle')) {
+            return `<span class="tech-icon" title="Java"><img src="${this.getIconUri('java-svgrepo-com.svg')}" alt="Java"></span>`;
+        }
+        if (file.includes('aws') || file.includes('cloudformation') || file.includes('sam')) {
+            return `<span class="tech-icon" title="AWS"><img src="${this.getIconUri('aws-svgrepo-com.svg')}" alt="AWS"></span>`;
+        }
+        if (file.includes('azure') || file.includes('arm-template')) {
+            return `<span class="tech-icon" title="Azure"><img src="${this.getIconUri('azure-svgrepo-com.svg')}" alt="Azure"></span>`;
+        }
+        if (file.includes('gcp') || file.includes('google') || file.includes('gcloud')) {
+            return `<span class="tech-icon" title="GCP"><img src="${this.getIconUri('gcp-svgrepo-com.svg')}" alt="GCP"></span>`;
+        }
+
+        return '';
+    }
+
+    private getTechIcon(finding: Finding): string {
+        const file = (finding.file || '').toLowerCase();
+        const provider = (finding.provider || '').toLowerCase();
+        const type = finding.type;
+        const resource = (finding.resource || '').toLowerCase();
+
+        // Cloud providers
+        if (provider === 'aws' || resource.includes('aws') || file.includes('aws') || file.includes('cloudformation')) {
+            return `<span class="tech-icon" title="AWS"><img src="${this.getIconUri('aws-svgrepo-com.svg')}" alt="AWS"></span>`;
+        }
+        if (provider === 'azure' || resource.includes('azure') || file.includes('azure')) {
+            return `<span class="tech-icon" title="Azure"><img src="${this.getIconUri('azure-svgrepo-com.svg')}" alt="Azure"></span>`;
+        }
+        if (provider === 'gcp' || provider === 'google' || resource.includes('gcp') || resource.includes('google')) {
+            return `<span class="tech-icon" title="GCP"><img src="${this.getIconUri('gcp-svgrepo-com.svg')}" alt="GCP"></span>`;
+        }
+
+        // Container/orchestration
+        if (file.includes('dockerfile') || resource.includes('docker') || file.endsWith('.dockerfile')) {
+            return `<span class="tech-icon" title="Docker"><img src="${this.getIconUri('docker2-svgrepo-com.svg')}" alt="Docker"></span>`;
+        }
+
+        // IaC
+        if (file.endsWith('.tf') || file.includes('terraform')) {
+            return `<span class="tech-icon" title="Terraform"><img src="${this.getIconUri('terraform-svgrepo-com.svg')}" alt="Terraform"></span>`;
+        }
+
+        // Languages
+        if (file.endsWith('.py') || file.includes('requirements.txt') || file.includes('pyproject.toml')) {
+            return `<span class="tech-icon" title="Python"><img src="${this.getIconUri('python-svgrepo-com.svg')}" alt="Python"></span>`;
+        }
+        if (file.endsWith('.go') || file.includes('go.mod') || file.includes('go.sum')) {
+            return `<span class="tech-icon" title="Go"><img src="${this.getIconUri('go-svgrepo-com.svg')}" alt="Go"></span>`;
+        }
+        if (file.endsWith('.rb') || file.includes('gemfile')) {
+            return `<span class="tech-icon" title="Ruby"><img src="${this.getIconUri('ruby-svgrepo-com.svg')}" alt="Ruby"></span>`;
+        }
+        if (file.endsWith('.js') || file.endsWith('.ts') || file.includes('package.json') || file.includes('node_modules')) {
+            return `<span class="tech-icon" title="Node.js"><img src="${this.getIconUri('nodejs-svgrepo-com.svg')}" alt="Node.js"></span>`;
+        }
+        if (file.endsWith('.java') || file.includes('pom.xml') || file.includes('build.gradle')) {
+            return `<span class="tech-icon" title="Java"><img src="${this.getIconUri('java-svgrepo-com.svg')}" alt="Java"></span>`;
+        }
+
+        // AI/LLM
+        if (type === 'llm') {
+            return `<span class="tech-icon" title="AI/LLM"><img src="${this.getIconUri('ai-svgrepo-com.svg')}" alt="AI"></span>`;
+        }
+
+        return '';
     }
 
     private escapeHtml(text: string): string {

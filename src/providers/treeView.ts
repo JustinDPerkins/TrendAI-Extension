@@ -328,9 +328,10 @@ export class ResultsTreeProvider implements vscode.TreeDataProvider<ResultItem> 
         let count = 0;
 
         for (const result of this.tmasResults.values()) {
-            count += result.vulnerabilities?.totalVulnCount || result.vulnerabilities?.findings?.length || 0;
-            count += result.secrets?.totalSecretCount || result.secrets?.findings?.length || 0;
-            count += result.malware?.findings?.length || 0;
+            // Use flattenFindings to count actual findings (consistent with results panel)
+            count += flattenFindings<TmasVulnerability>(result.vulnerabilities?.findings).length;
+            count += flattenFindings<TmasSecret>(result.secrets?.findings).length;
+            count += flattenFindings<TmasMalware>(result.malware?.findings).length;
         }
 
         for (const result of this.templateResults.values()) {
