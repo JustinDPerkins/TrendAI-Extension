@@ -5,6 +5,29 @@ All notable changes to the TrendAI Security Scanner extension will be documented
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2026-02-19
+
+### Added
+- **LLM Scan: Technique Selection** - Choose attack techniques (Ignore instructions, DAN, Encrypt response, Payload splitting)
+- **LLM Scan: Modifier Selection** - Choose attack modifiers (Base64 Encoding, Best-of-N Scrambling)
+- **Named Scan Configs** - Save LLM scan configurations with custom names for easy reuse
+- **Config Reuse** - Load and rerun previous scan configs without reconfiguring
+- **Scan History** - All scan results saved to `.trendai-scans/results/` folder
+- **IaC Results Persistence** - IaC scan results now saved to disk for later viewing
+- **Show Results Dashboard** - Now loads historical results from saved scan files
+
+### Changed
+- **Compact LLM Results UI** - Replaced large card layout with compact table view
+- **3-Column Conversation View** - Attack Prompt, Model Response, and Evaluation displayed side-by-side
+- **Reduced UI Padding** - Smaller stats, headers, and table cells for denser information display
+- **Organized Folder Structure** - Results in `results/`, configs in `saved-configs/`
+- **Single Config Format** - YAML only (no duplicate JSON), used by both TMAS CLI and extension
+
+### Fixed
+- **Clear Results** - Now properly clears the results panel in addition to diagnostics
+- **Show Results** - Dashboard now displays saved results instead of empty panel
+- **Excluded Dependency Folders** - Scan results now filter out `.terraform`, `node_modules`, `.git`, and other dependency directories to avoid false positives from downloaded binaries
+
 ## [0.1.6] - 2026-02-11
 
 ### Fixed

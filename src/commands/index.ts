@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 import { TmasScanner } from '../scanners/tmas';
 import { TemplateScanner } from '../scanners/templateScanner';
-import { LLMScanner, ENDPOINT_CONFIGS, ATTACK_OBJECTIVES, LLMEndpointType, LLMScanConfig, LLMScanResult, DiscoveredModel } from '../scanners/llmScanner';
+import { LLMScanner, ENDPOINT_CONFIGS, ATTACK_OBJECTIVES, ATTACK_TECHNIQUES, ATTACK_MODIFIERS, LLMEndpointType, LLMScanConfig, SavedLLMConfig, DiscoveredModel } from '../scanners/llmScanner';
 import { DiagnosticsProvider } from '../providers/diagnostics';
 import { ResultsTreeProvider } from '../providers/treeView';
 import { ResultsPanelProvider } from '../providers/resultsPanel';
@@ -49,6 +50,41 @@ export class CommandHandler {
 
     showResultsPanel(): void {
         this.resultsPanel = ResultsPanelProvider.createOrShow(this.extensionUri);
+        // Load historical results if panel is empty
+        this.loadHistoricalResults();
+    }
+
+    private loadHistoricalResults(): void {
+        const resultsDir = this.getScansDir();
+        if (!fs.existsSync(resultsDir)) {
+            return;
+        }
+
+        try {
+            const files = fs.readdirSync(resultsDir).sort().reverse();
+
+            // Load most recent IaC scan
+            const iacFile = files.find(f => f.startsWith('iac-scan-') && f.endsWith('.json'));
+            if (iacFile && this.resultsPanel) {
+                const content = fs.readFileSync(path.join(resultsDir, iacFile), 'utf-8');
+                const scanRecord = JSON.parse(content);
+                if (scanRecord.result) {
+                    this.resultsPanel.addTmasResults(scanRecord.result, scanRecord.target || 'Unknown');
+                }
+            }
+
+            // Load most recent LLM scan
+            const llmFile = files.find(f => f.startsWith('llm-scan-') && f.endsWith('.json'));
+            if (llmFile && this.resultsPanel) {
+                const content = fs.readFileSync(path.join(resultsDir, llmFile), 'utf-8');
+                const llmResult = JSON.parse(content);
+                if (llmResult.details && llmResult.results) {
+                    this.resultsPanel.addLLMResults(llmResult);
+                }
+            }
+        } catch (error) {
+            this.outputChannel.appendLine(`Failed to load historical results: ${error}`);
+        }
     }
 
     /**
@@ -355,6 +391,9 @@ export class CommandHandler {
     clearResults(): void {
         this.diagnosticsProvider.clearDiagnostics();
         this.resultsTreeProvider.clear();
+        if (ResultsPanelProvider.currentPanel) {
+            ResultsPanelProvider.currentPanel.clear();
+        }
         this.updateStatusBar();
         vscode.window.showInformationMessage('All scan results cleared');
     }
@@ -671,6 +710,19 @@ export class CommandHandler {
                 return;
             }
 
+            // Check for saved configs
+            const savedConfigs = this.listSavedConfigs();
+            if (savedConfigs.length > 0) {
+                const loaded = await this.promptLoadSavedConfig(savedConfigs);
+                if (loaded === 'cancel') return;
+                if (loaded) {
+                    // Run with loaded config - don't create new config file
+                    await this.runLLMScan(loaded.config, tmasPath, loaded.configName);
+                    return;
+                }
+                // User chose "New Scan", continue with normal flow
+            }
+
             // Step 1: Select endpoint type
             const endpointType = await this.selectEndpointType();
             if (!endpointType) return;
@@ -694,23 +746,42 @@ export class CommandHandler {
             const objectives = await this.selectAttackObjectives();
             if (!objectives || objectives.length === 0) return;
 
-            // Step 6: Optional - Enter system prompt to test against
+            // Step 6: Select attack techniques
+            const techniques = await this.selectAttackTechniques();
+            if (!techniques || techniques.length === 0) return;
+
+            // Step 7: Select attack modifiers
+            const modifiers = await this.selectAttackModifiers();
+            if (!modifiers || modifiers.length === 0) return;
+
+            // Step 8: Optional - Enter system prompt to test against
             const systemPrompt = await this.enterSystemPrompt();
 
-            // Step 7: Run the scan
+            // Build config
             const config: LLMScanConfig = {
                 endpointType,
                 endpointUrl: this.normalizeEndpointUrl(endpointUrl),
                 model,
                 apiKey: targetApiKey,
                 objectives,
-                techniques: ['None'],
-                modifiers: ['None'],
+                techniques,
+                modifiers,
                 concurrency: 2,
                 systemPrompt
             };
 
-            await this.runLLMScan(config, tmasPath);
+            // Name the config
+            const configName = await vscode.window.showInputBox({
+                title: 'Name this scan configuration',
+                prompt: 'Enter a name to save this config for reuse',
+                value: `${model}-${endpointType}`,
+                placeHolder: 'my-llm-scan',
+                ignoreFocusOut: true
+            });
+            if (!configName) return;
+
+            // Run the scan with named config
+            await this.runLLMScan(config, tmasPath, configName);
 
         } catch (error) {
             this.handleError('LLM scan failed', error);
@@ -747,7 +818,7 @@ export class CommandHandler {
         ];
 
         const selected = await vscode.window.showQuickPick(items, {
-            title: 'TrendAI LLM Security Scanner (Step 1/5)',
+            title: 'TrendAI LLM Security Scanner (Step 1/8)',
             placeHolder: 'Select your LLM endpoint type',
             ignoreFocusOut: true
         });
@@ -770,7 +841,7 @@ export class CommandHandler {
         const defaultUrl = config.baseUrl;
 
         const url = await vscode.window.showInputBox({
-            title: 'TrendAI LLM Security Scanner (Step 2/5)',
+            title: 'TrendAI LLM Security Scanner (Step 2/8)',
             prompt: `Enter the ${config.name} endpoint URL`,
             value: defaultUrl,
             placeHolder: 'e.g., http://localhost:11434 or https://api.openai.com',
@@ -815,7 +886,7 @@ export class CommandHandler {
         const config = ENDPOINT_CONFIGS[endpointType];
 
         return await vscode.window.showInputBox({
-            title: 'TrendAI LLM Security Scanner (Step 3/5)',
+            title: 'TrendAI LLM Security Scanner (Step 3/8)',
             prompt: `Enter your ${config.name} API key`,
             password: true,
             placeHolder: 'sk-...',
@@ -853,7 +924,7 @@ export class CommandHandler {
         if (models.length === 0) {
             // No models found or discovery failed - manual entry
             return await vscode.window.showInputBox({
-                title: 'TrendAI LLM Security Scanner (Step 4/5)',
+                title: 'TrendAI LLM Security Scanner (Step 4/8)',
                 prompt: 'Enter the model name to scan',
                 placeHolder: 'e.g., gpt-4, llama3.2, mistral:7b',
                 ignoreFocusOut: true,
@@ -877,7 +948,7 @@ export class CommandHandler {
             }
 
             return await vscode.window.showInputBox({
-                title: 'TrendAI LLM Security Scanner (Step 4/5)',
+                title: 'TrendAI LLM Security Scanner (Step 4/8)',
                 prompt: 'Enter the model name to scan',
                 placeHolder: 'e.g., gpt-4, llama3.2, mistral:7b',
                 ignoreFocusOut: true
@@ -898,7 +969,7 @@ export class CommandHandler {
         });
 
         const selected = await vscode.window.showQuickPick(items, {
-            title: `TrendAI LLM Security Scanner (Step 4/5) - Found ${models.length} models`,
+            title: `TrendAI LLM Security Scanner (Step 4/8) - Found ${models.length} models`,
             placeHolder: 'Select the model to scan',
             ignoreFocusOut: true
         });
@@ -924,7 +995,7 @@ export class CommandHandler {
         }));
 
         const selected = await vscode.window.showQuickPick(items, {
-            title: 'TrendAI LLM Security Scanner (Step 5/5)',
+            title: 'TrendAI LLM Security Scanner (Step 5/8)',
             placeHolder: 'Select attack objectives to test',
             canPickMany: true,
             ignoreFocusOut: true
@@ -940,6 +1011,50 @@ export class CommandHandler {
                 return ATTACK_OBJECTIVES.map(o => o.name);
             }
             return undefined;
+        }
+
+        return selected.map(s => s.label);
+    }
+
+    private async selectAttackTechniques(): Promise<string[] | undefined> {
+        const items: vscode.QuickPickItem[] = ATTACK_TECHNIQUES.map(tech => ({
+            label: tech.name,
+            description: tech.description,
+            picked: tech.id === 'none' // Only "None" selected by default
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+            title: 'TrendAI LLM Security Scanner (Step 6/8)',
+            placeHolder: 'Select attack techniques (jailbreak methods)',
+            canPickMany: true,
+            ignoreFocusOut: true
+        });
+
+        if (!selected || selected.length === 0) {
+            // Default to "None" if nothing selected
+            return ['None'];
+        }
+
+        return selected.map(s => s.label);
+    }
+
+    private async selectAttackModifiers(): Promise<string[] | undefined> {
+        const items: vscode.QuickPickItem[] = ATTACK_MODIFIERS.map(mod => ({
+            label: mod.name,
+            description: mod.description,
+            picked: mod.id === 'none' // Only "None" selected by default
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+            title: 'TrendAI LLM Security Scanner (Step 7/8)',
+            placeHolder: 'Select attack modifiers (payload encoding)',
+            canPickMany: true,
+            ignoreFocusOut: true
+        });
+
+        if (!selected || selected.length === 0) {
+            // Default to "None" if nothing selected
+            return ['None'];
         }
 
         return selected.map(s => s.label);
@@ -965,6 +1080,107 @@ export class CommandHandler {
         return undefined;
     }
 
+    // ============ Saved Config Management ============
+
+    private getSavedConfigsDir(): string {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans', 'saved-configs');
+        }
+        return path.join(this.context.globalStorageUri.fsPath, 'saved-configs');
+    }
+
+    private getScansDir(): string {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans', 'results');
+        }
+        return path.join(this.context.globalStorageUri.fsPath, 'llm-scans', 'results');
+    }
+
+    private listSavedConfigs(): SavedLLMConfig[] {
+        const savedDir = this.getSavedConfigsDir();
+        if (!fs.existsSync(savedDir)) {
+            return [];
+        }
+
+        try {
+            const files = fs.readdirSync(savedDir)
+                .filter(f => f.endsWith('.yaml'))
+                .sort()
+                .reverse()
+                .slice(0, 10); // Show last 10 configs
+
+            return files.map(f => {
+                const filePath = path.join(savedDir, f);
+                const content = fs.readFileSync(filePath, 'utf-8');
+                const parsed = yaml.load(content) as Record<string, unknown>;
+                const target = parsed.target as Record<string, unknown> || {};
+                const objectives = parsed.attack_objectives as Array<Record<string, unknown>> || [];
+                const stats = fs.statSync(filePath);
+
+                return {
+                    name: f,
+                    createdAt: stats.mtime.toISOString(),
+                    config: {
+                        endpointType: 'custom' as const,
+                        endpointUrl: (target.endpoint as string) || '',
+                        model: (target.model as string) || '',
+                        objectives: objectives.map(o => o.name as string),
+                        techniques: (objectives[0]?.techniques as string[]) || ['None'],
+                        modifiers: (objectives[0]?.modifiers as string[]) || ['None'],
+                        concurrency: (parsed.settings as Record<string, unknown>)?.concurrency as number || 2,
+                        systemPrompt: (target.system_prompt as string) || undefined
+                    }
+                } as SavedLLMConfig;
+            }).filter(c => c && c.config);
+        } catch {
+            return [];
+        }
+    }
+
+    private async promptLoadSavedConfig(configs: SavedLLMConfig[]): Promise<{ config: LLMScanConfig, configName: string } | 'cancel' | undefined> {
+        const items: vscode.QuickPickItem[] = [
+            {
+                label: '$(add) New Scan',
+                description: 'Create a new scan configuration',
+                detail: 'Configure endpoint, model, and attack options from scratch'
+            }
+        ];
+
+        if (configs.length > 0) {
+            items.push({ label: 'Saved Configs', kind: vscode.QuickPickItemKind.Separator });
+            items.push(...configs.map((c, index) => ({
+                label: `$(file) ${c.name.replace('.yaml', '')}`,
+                description: `${c.config.model || 'Unknown'} - ${c.config.objectives?.length || 0} objectives`,
+                detail: new Date(c.createdAt).toLocaleString(),
+                index // Store index for lookup
+            })));
+        }
+
+        const selected = await vscode.window.showQuickPick(items, {
+            title: 'TrendAI LLM Security Scanner',
+            placeHolder: 'Load a saved config or create new',
+            ignoreFocusOut: true
+        }) as (vscode.QuickPickItem & { index?: number }) | undefined;
+
+        if (!selected) return 'cancel';
+        if (selected.label === '$(add) New Scan') return undefined;
+
+        // Find config by index
+        if (selected.index !== undefined) {
+            const savedConfig = configs[selected.index];
+            if (savedConfig) {
+                // Return config name without .yaml extension
+                const configName = savedConfig.name.replace('.yaml', '');
+                return { config: savedConfig.config, configName };
+            }
+        }
+
+        return undefined;
+    }
+
+
     private normalizeEndpointUrl(url: string): string {
         // Ensure URL ends with /v1 for OpenAI-compatible endpoints
         // but remove /chat/completions if user accidentally included it
@@ -987,10 +1203,10 @@ export class CommandHandler {
         return normalized;
     }
 
-    private async runLLMScan(config: LLMScanConfig, tmasPath: string): Promise<void> {
+    private async runLLMScan(config: LLMScanConfig, tmasPath: string, configName?: string): Promise<void> {
         await this.runWithProgress('Scanning LLM endpoint for security vulnerabilities...', async () => {
             try {
-                const result = await this.llmScanner.scan(config, tmasPath);
+                const result = await this.llmScanner.scan(config, tmasPath, configName);
 
                 // Show results in panel
                 this.resultsPanel = ResultsPanelProvider.createOrShow(this.extensionUri);

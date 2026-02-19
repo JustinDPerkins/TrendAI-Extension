@@ -4,3 +4,7 @@ node_modules/
 .vscode-test/
 .DS_Store
 *.log
+
+./claude/
+
+CLAUDE.md

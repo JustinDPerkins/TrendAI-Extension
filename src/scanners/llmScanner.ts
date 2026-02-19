@@ -109,6 +109,20 @@ export const ATTACK_TECHNIQUES = [
     { id: 'payload_splitting', name: 'Payload splitting', description: 'Split attack across messages' }
 ];
 
+export const ATTACK_MODIFIERS = [
+    { id: 'none', name: 'None', description: 'No modification to attack payload' },
+    { id: 'base64', name: 'Base64 Encoding', description: 'Encode payload in Base64' },
+    { id: 'best_of_n', name: 'Best-of-N Scrambling', description: 'Try multiple payload variations' }
+];
+
+// Saved config interface
+export interface SavedLLMConfig {
+    name: string;
+    description?: string;
+    createdAt: string;
+    config: LLMScanConfig;
+}
+
 // LLM Scan Result Types
 export interface LLMScanDetails {
     scanId: string;
@@ -266,24 +280,31 @@ export class LLMScanner {
     /**
      * Run the LLM security scan
      */
-    async scan(config: LLMScanConfig, tmasPath: string): Promise<LLMScanResult> {
+    async scan(config: LLMScanConfig, tmasPath: string, configName?: string): Promise<LLMScanResult> {
         const apiToken = await this.settingsManager.getApiToken();
         if (!apiToken) {
             throw new Error('TMAS API token not configured');
         }
 
-        // Create config file
-        const scanDir = this.getScanHistoryDir();
-        if (!fs.existsSync(scanDir)) {
-            fs.mkdirSync(scanDir, { recursive: true });
+        // Create directories
+        const resultsDir = this.getScanHistoryDir();
+        const configsDir = this.getSavedConfigsDir();
+        if (!fs.existsSync(resultsDir)) {
+            fs.mkdirSync(resultsDir, { recursive: true });
+        }
+        if (!fs.existsSync(configsDir)) {
+            fs.mkdirSync(configsDir, { recursive: true });
         }
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const configPath = path.join(scanDir, `llm-config-${timestamp}.yaml`);
-        const outputPath = path.join(scanDir, `llm-scan-${timestamp}.json`);
+        const safeName = configName ? configName.replace(/[^a-zA-Z0-9-_]/g, '_') : `llm-config-${timestamp}`;
+        const configPath = path.join(configsDir, `${safeName}.yaml`);
+        const outputPath = path.join(resultsDir, `llm-scan-${timestamp}.json`);
 
+        // Generate and save config (overwrites if exists)
         const yamlConfig = this.generateConfig(config);
         fs.writeFileSync(configPath, yamlConfig);
+
         this.outputChannel.appendLine(`Config written to: ${configPath}`);
         this.outputChannel.appendLine(`Config contents:\n${yamlConfig}`);
 
@@ -472,9 +493,17 @@ export class LLMScanner {
     private getScanHistoryDir(): string {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans');
+            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans', 'results');
         }
-        return path.join(this.context.globalStorageUri.fsPath, 'llm-scans');
+        return path.join(this.context.globalStorageUri.fsPath, 'llm-scans', 'results');
+    }
+
+    private getSavedConfigsDir(): string {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans', 'saved-configs');
+        }
+        return path.join(this.context.globalStorageUri.fsPath, 'llm-scans', 'saved-configs');
     }
 
     private async httpRequest(url: string, apiKey?: string, timeout: number = 10000): Promise<string> {

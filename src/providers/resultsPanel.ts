@@ -3,7 +3,7 @@ import { TmasScanResult, TmasVulnerability, TmasSecret, TmasMalware, flattenFind
 import { TemplateScanResult, TemplateScanFinding } from '../scanners/templateScanner';
 import { LLMScanResult, LLMAttackResult } from '../scanners/llmScanner';
 
-interface Finding {
+export interface Finding {
     id: string;
     ruleId: string;
     type: 'vulnerability' | 'secret' | 'malware' | 'iac' | 'llm';
@@ -1282,28 +1282,28 @@ export class ResultsPanelProvider {
         .llm-scan-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            margin-bottom: 24px;
+            border-radius: 6px;
+            margin-bottom: 16px;
             overflow: hidden;
         }
 
         .llm-scan-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 20px 24px;
+            gap: 12px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-subtle);
         }
 
         .llm-icon {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             background: var(--accent-subtle);
-            border-radius: 8px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .llm-scan-header .info {
@@ -1336,23 +1336,23 @@ export class ResultsPanelProvider {
         .llm-stat {
             flex: 1;
             text-align: center;
-            padding: 20px;
+            padding: 12px 16px;
             background: var(--bg-elevated);
         }
 
         .llm-stat .value {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 600;
             line-height: 1;
             color: var(--text-primary);
         }
 
         .llm-stat .label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .llm-stat.success .value { color: var(--low-color); }
@@ -1367,7 +1367,7 @@ export class ResultsPanelProvider {
 
         .objective-table th,
         .objective-table td {
-            padding: 12px 20px;
+            padding: 8px 12px;
             text-align: left;
             border-bottom: 1px solid var(--border-subtle);
         }
@@ -1402,36 +1402,53 @@ export class ResultsPanelProvider {
         .success-rate.medium { background: rgba(192, 86, 33, 0.15); color: var(--high-color); }
         .success-rate.low { background: rgba(47, 133, 90, 0.15); color: var(--low-color); }
 
-        /* Attack Cards */
+        /* Attack Results Table */
         .attack-details {
-            margin-top: 24px;
+            margin-top: 16px;
         }
 
-        .attack-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            overflow: hidden;
+        .attack-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
         }
 
-        .attack-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+        .attack-table th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .attack-table td {
+            padding: 6px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: top;
+        }
+
+        .attack-row {
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.1s ease;
         }
 
-        .attack-card-header:hover {
+        .attack-row:hover {
+            background: var(--bg-primary);
+        }
+
+        .attack-row.expanded {
             background: var(--bg-primary);
         }
 
         .attack-outcome {
-            padding: 4px 10px;
+            display: inline-block;
+            padding: 2px 6px;
             border-radius: 3px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -1440,55 +1457,88 @@ export class ResultsPanelProvider {
         .attack-outcome.succeeded { background: rgba(197, 48, 48, 0.15); color: var(--critical-color); }
         .attack-outcome.failed { background: rgba(47, 133, 90, 0.15); color: var(--low-color); }
 
-        .attack-card-body {
-            display: none;
-            padding: 16px;
-            border-top: 1px solid var(--border-subtle);
-            background: var(--bg-primary);
-        }
-
-        .attack-card.expanded .attack-card-body {
-            display: block;
-        }
-
-        .chat-message {
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-family: 'SF Mono', Consolas, monospace;
+        .attack-objective {
             font-size: 12px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-break: break-word;
+            color: var(--text-primary);
         }
 
-        .chat-message.user {
-            background: var(--bg-elevated);
-            border-left: 2px solid var(--accent-color);
-        }
-
-        .chat-message.assistant {
-            background: var(--bg-elevated);
-            border-left: 2px solid var(--info-color);
-        }
-
-        .chat-label {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+        .attack-technique {
+            font-size: 11px;
             color: var(--text-muted);
         }
 
-        .evaluation-box {
+        .expand-cell {
+            width: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .attack-row.expanded .expand-cell {
+            transform: rotate(90deg);
+        }
+
+        /* Compact Expandable Details */
+        .attack-details-row {
+            display: none;
+        }
+
+        .attack-details-row.expanded {
+            display: table-row;
+        }
+
+        .attack-details-cell {
+            padding: 0 !important;
             background: var(--bg-elevated);
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            border-left: 2px solid var(--medium-color);
+        }
+
+        .attack-conversation {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            padding: 10px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .conv-section {
+            background: var(--bg-primary);
+            border-radius: 4px;
+            padding: 8px 10px;
+            overflow: hidden;
+        }
+
+        .conv-section.prompt { border-left: 2px solid var(--accent-color); }
+        .conv-section.response { border-left: 2px solid var(--info-color); }
+        .conv-section.evaluation { border-left: 2px solid var(--medium-color); }
+
+        .conv-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .conv-content {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 10px;
+            line-height: 1.4;
             color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .conv-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .conv-content::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -1632,8 +1682,10 @@ export class ResultsPanelProvider {
         }
 
         function toggleAttack(id) {
-            const card = document.getElementById('attack-' + id);
-            card.classList.toggle('expanded');
+            const row = document.getElementById('attack-row-' + id);
+            const details = document.getElementById('attack-details-' + id);
+            row.classList.toggle('expanded');
+            details.classList.toggle('expanded');
         }
 
         function toggleFile(file) {
@@ -1997,37 +2049,49 @@ export class ResultsPanelProvider {
 
             <div class="attack-details">
                 <div class="section-title">Attack Details</div>
-                ${result.results.map(attack => {
-                    const isSuccess = attack.outcome === 'Attack Succeeded';
-                    const outcomeClass = isSuccess ? 'succeeded' : 'failed';
-                    const cardId = attackIndex++;
+                <table class="attack-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">Outcome</th>
+                            <th>Objective</th>
+                            <th style="width: 120px;">Technique</th>
+                            <th style="width: 24px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${result.results.map(attack => {
+                            const isSuccess = attack.outcome === 'Attack Succeeded';
+                            const outcomeClass = isSuccess ? 'succeeded' : 'failed';
+                            const cardId = attackIndex++;
 
-                    return `
-                    <div class="attack-card ${isSuccess ? 'expanded' : ''}" id="attack-${cardId}">
-                        <div class="attack-card-header" onclick="toggleAttack(${cardId})">
-                            <span class="attack-outcome ${outcomeClass}">${isSuccess ? 'Succeeded' : 'Blocked'}</span>
-                            <span class="finding-title">${this.escapeHtml(attack.objective)}</span>
-                            ${attack.technique !== 'None' ? `<span class="badge badge-type">${this.escapeHtml(attack.technique)}</span>` : ''}
-                            <span class="expand-icon">›</span>
-                        </div>
-                        <div class="attack-card-body">
-                            <div class="chat-message user">
-                                <div class="chat-label">Attack Prompt</div>
-                                ${this.escapeHtml(attack.attackPrompt || 'No prompt recorded')}
-                            </div>
-                            <div class="chat-message assistant">
-                                <div class="chat-label">Model Response</div>
-                                ${this.escapeHtml(attack.modelResponse || 'No response recorded')}
-                            </div>
-                            ${attack.evaluation ? `
-                            <div class="evaluation-box">
-                                <div class="chat-label">Evaluation</div>
-                                ${this.escapeHtml(attack.evaluation)}
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>`;
-                }).join('')}
+                            return `
+                        <tr class="attack-row ${isSuccess ? 'expanded' : ''}" onclick="toggleAttack(${cardId})" id="attack-row-${cardId}">
+                            <td><span class="attack-outcome ${outcomeClass}">${isSuccess ? 'Succeeded' : 'Blocked'}</span></td>
+                            <td class="attack-objective">${this.escapeHtml(attack.objective)}</td>
+                            <td class="attack-technique">${attack.technique !== 'None' ? this.escapeHtml(attack.technique) : '-'}</td>
+                            <td class="expand-cell">›</td>
+                        </tr>
+                        <tr class="attack-details-row ${isSuccess ? 'expanded' : ''}" id="attack-details-${cardId}">
+                            <td colspan="4" class="attack-details-cell">
+                                <div class="attack-conversation">
+                                    <div class="conv-section prompt">
+                                        <div class="conv-label">Attack Prompt</div>
+                                        <div class="conv-content">${this.escapeHtml(attack.attackPrompt || 'No prompt recorded')}</div>
+                                    </div>
+                                    <div class="conv-section response">
+                                        <div class="conv-label">Model Response</div>
+                                        <div class="conv-content">${this.escapeHtml(attack.modelResponse || 'No response recorded')}</div>
+                                    </div>
+                                    <div class="conv-section evaluation">
+                                        <div class="conv-label">Evaluation</div>
+                                        <div class="conv-content">${this.escapeHtml(attack.evaluation || 'No evaluation')}</div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
             </div>`;
         }
 

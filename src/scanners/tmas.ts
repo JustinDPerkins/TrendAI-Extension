@@ -140,6 +140,37 @@ export class TmasScanner {
         this.outputChannel = outputChannel;
     }
 
+    private getResultsDir(): string {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            return path.join(workspaceFolders[0].uri.fsPath, '.trendai-scans', 'results');
+        }
+        return path.join(process.env.HOME || '/tmp', '.trendai-scans', 'results');
+    }
+
+    private saveResults(result: TmasScanResult, scanType: string, target: string): string {
+        const resultsDir = this.getResultsDir();
+        if (!fs.existsSync(resultsDir)) {
+            fs.mkdirSync(resultsDir, { recursive: true });
+        }
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const targetName = path.basename(target).replace(/[^a-zA-Z0-9-_]/g, '_');
+        const filename = `iac-scan-${targetName}-${timestamp}.json`;
+        const filePath = path.join(resultsDir, filename);
+
+        const scanRecord = {
+            scanType,
+            target,
+            timestamp: new Date().toISOString(),
+            result
+        };
+
+        fs.writeFileSync(filePath, JSON.stringify(scanRecord, null, 2));
+        this.outputChannel.appendLine(`Results saved to: ${filePath}`);
+        return filePath;
+    }
+
     async ensureTmasInstalled(): Promise<string> {
         const tmasPath = this.settingsManager.getTmasPath();
 
@@ -268,6 +299,10 @@ export class TmasScanner {
                     this.outputChannel.appendLine(`TMAS raw output: ${stdout.substring(0, 2000)}`);
                     const result = this.parseOutput(stdout);
                     this.outputChannel.appendLine(`Parsed result keys: ${JSON.stringify(Object.keys(result))}`);
+
+                    // Save results to disk
+                    this.saveResults(result, options.artifactType, options.target);
+
                     resolve(result);
                 } catch (parseError) {
                     this.outputChannel.appendLine(`Raw output: ${stdout}`);
@@ -325,7 +360,87 @@ export class TmasScanner {
             return {};
         }
 
-        return JSON.parse(jsonMatch[0]);
+        const result = JSON.parse(jsonMatch[0]);
+        return this.filterExcludedPaths(result);
+    }
+
+    // Directories to exclude from scan results (downloaded dependencies, not user code)
+    private static readonly EXCLUDED_PATHS = [
+        '.terraform',
+        'node_modules',
+        '.git',
+        '__pycache__',
+        '.venv',
+        'venv',
+        '.tox',
+        'dist',
+        'build',
+        '.eggs',
+        '*.egg-info'
+    ];
+
+    private filterExcludedPaths(result: TmasScanResult): TmasScanResult {
+        const shouldExclude = (filePath: string | undefined): boolean => {
+            if (!filePath) return false;
+            return TmasScanner.EXCLUDED_PATHS.some(excluded =>
+                filePath.includes(`/${excluded}/`) ||
+                filePath.includes(`\\${excluded}\\`) ||
+                filePath.includes(`/.${excluded}/`)
+            );
+        };
+
+        // Filter vulnerabilities - check locations array in each finding
+        if (result.vulnerabilities?.findings) {
+            const findings = result.vulnerabilities.findings as Record<string, Array<{ locations?: string[] }>>;
+            if (typeof findings === 'object') {
+                for (const severity of Object.keys(findings)) {
+                    const severityFindings = findings[severity];
+                    if (Array.isArray(severityFindings)) {
+                        findings[severity] = severityFindings.filter(vuln => {
+                            const locations = vuln.locations || [];
+                            return !locations.some(loc => shouldExclude(loc));
+                        });
+                    }
+                }
+                // Recalculate counts
+                let total = 0, critical = 0, high = 0, medium = 0, low = 0;
+                for (const severity of Object.keys(findings)) {
+                    const arr = findings[severity];
+                    if (Array.isArray(arr)) {
+                        const count = arr.length;
+                        total += count;
+                        if (severity === 'Critical') critical = count;
+                        else if (severity === 'High') high = count;
+                        else if (severity === 'Medium') medium = count;
+                        else if (severity === 'Low') low = count;
+                    }
+                }
+                result.vulnerabilities.totalVulnCount = total;
+                result.vulnerabilities.criticalCount = critical;
+                result.vulnerabilities.highCount = high;
+                result.vulnerabilities.mediumCount = medium;
+                result.vulnerabilities.lowCount = low;
+            }
+        }
+
+        // Filter secrets
+        if (result.secrets?.findings) {
+            const findings = result.secrets.findings as Record<string, TmasSecret[]> | TmasSecret[];
+            if (Array.isArray(findings)) {
+                result.secrets.findings = findings.filter(s => !shouldExclude(s.file));
+            } else if (typeof findings === 'object') {
+                for (const key of Object.keys(findings)) {
+                    const severityFindings = (findings as Record<string, TmasSecret[]>)[key];
+                    if (Array.isArray(severityFindings)) {
+                        (findings as Record<string, TmasSecret[]>)[key] = severityFindings.filter(
+                            secret => !shouldExclude(secret.file)
+                        );
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     async scanDirectory(dirPath: string): Promise<TmasScanResult> {
