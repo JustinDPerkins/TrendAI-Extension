@@ -241,10 +241,17 @@ export class TmasScanner {
     private async extractArchive(archivePath: string, destDir: string, isZip: boolean): Promise<void> {
         return new Promise((resolve, reject) => {
             let command: string;
+            const isWindows = process.platform === 'win32';
 
             if (isZip) {
-                command = `unzip -o "${archivePath}" -d "${destDir}"`;
+                if (isWindows) {
+                    // Use PowerShell's Expand-Archive on Windows
+                    command = `powershell -Command "Expand-Archive -Path '${archivePath}' -DestinationPath '${destDir}' -Force"`;
+                } else {
+                    command = `unzip -o "${archivePath}" -d "${destDir}"`;
+                }
             } else {
+                // tar is available on Windows 10+ and all Unix systems
                 command = `tar -xzf "${archivePath}" -C "${destDir}"`;
             }
 
